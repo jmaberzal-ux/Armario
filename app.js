@@ -186,16 +186,16 @@ const STYLE=[
 const LIMS=['Nada de fotos con cara','Nada fuera de casa','Nada de sitios con gente cerca','Nada en el trabajo','Siempre con palabra de seguridad'];
 const LIMRULE={'Nada fuera de casa':['provocar','fuera','hotel','coche','banyo','aire','sinropa'],'Nada de sitios con gente cerca':['banyo','aire','provocar'],'Nada en el trabajo':['debajo','fotomas']};
 const CATS=[
- {k:'pista',e:'🤫',n:'Insinuar',s:'Pistas a lo largo del día'},
- {k:'rem',e:'📱',n:'A distancia',s:'Calentar antes de llegar'},
- {k:'noche',e:'🌙',n:'Esta noche',s:'Caricias, oral, posturas'},
- {k:'atad',e:'🪢',n:'Ataduras',s:'Esposas y cuerdas'},
- {k:'rol',e:'🎭',n:'Rol',s:'Ser otros por una noche'},
- {k:'obj',e:'👙',n:'Ropa y juguetes',s:'Lo que hay en el cajón'},
- {k:'fuera',e:'🌿',n:'Fuera de casa',s:'Sitios escondidos'},
- {k:'cita',e:'🍷',n:'Cita',s:'Un plan completo'},
- {k:'azar',e:'🎲',n:'Sorpresa',s:'Que elija la app'},
- {k:'mia',e:'✍️',n:'Escribir la mía',s:'O pegar muchas'}];
+ {k:'pista',e:'🤫',n:'Insinuar',s:'Pistas a lo largo del día',g:'ahora'},
+ {k:'rem',e:'📱',n:'A distancia',s:'Calentar antes de llegar',g:'ahora'},
+ {k:'noche',e:'🌙',n:'Esta noche',s:'Caricias, oral, posturas',g:'ahora'},
+ {k:'atad',e:'🪢',n:'Ataduras',s:'Esposas y cuerdas',g:'ahora'},
+ {k:'obj',e:'👙',n:'Ropa y juguetes',s:'Lo que hay en el cajón',g:'ahora'},
+ {k:'rol',e:'🎭',n:'Rol',s:'Ser otros por una noche',g:'plan'},
+ {k:'fuera',e:'🌿',n:'Fuera de casa',s:'Cena, sitios escondidos',g:'plan'},
+ {k:'cita',e:'🍷',n:'Cita',s:'Un plan completo',g:'plan'},
+ {k:'azar',e:'🎲',n:'Sorpresa',s:'Que elija la app',g:'vuestro'},
+ {k:'mia',e:'✍️',n:'Vuestra biblioteca',s:'Escribir o importar',g:'vuestro'}];
 const LV=[null,{n:'Tierno',e:'🙂'},{n:'Coqueto',e:'😏'},{n:'Caliente',e:'🔥'},{n:'Muy caliente',e:'🔥🔥'},{n:'Sin filtro',e:'😈'}];
 const TIPO={toy:[['vibrador','💜','Vibrador'],['esposas','⛓️','Esposas'],['cuerdas','🪢','Cuerdas'],['venda','🙈','Venda'],['plumas','🪶','Plumas'],['aceite','💧','Aceite'],['columpio','🎠','Columpio'],['otro','🎁','Otro']],
  ropa:[['lenceria','👙','Lencería'],['disfraz','🎭','Disfraz'],['tacones','👠','Tacones o medias'],['bata','🥻','Bata o kimono'],['otro','✨','Otra']]};
@@ -431,7 +431,7 @@ function vIntro(){return `<div class="intro"><div class="e">🔥</div><h1>Llama<
 
 function vPin(){return `<div class="lock"><div style="font-size:44px">🔥</div><div class="sub">Introduce tu PIN</div><div class="dots">${[0,1,2,3].map(i=>`<i class="${i<pinBuf.length?'on':''}"></i>`).join('')}</div><div class="pad">${['1','2','3','4','5','6','7','8','9','','0','x'].map(d=>d?`<button data-a="pk" data-v="${d}">${d==='x'?'⌫':d}</button>`:'<span></span>').join('')}</div></div>`;}
 
-function vHome(){const me=S.me,o=ot(me),n=now();let h=`<h1>Hola, ${esc(nm(me))}</h1>`+tempHero();
+function vHome(){const me=S.me,o=ot(me),n=now();const dua=nm(o)?`${esc(nm(me))} & ${esc(nm(o))}`:esc(nm(me));let h=`<h1>Hola, ${esc(nm(me))}</h1><p class="sub">${dua} · vuestro rincón, de nadie más</p>`;
  if(!S.qdone[me])h+=`<button class="big hot" data-a="quiz"><span class="e">📝</span><span><b>Tu cuestionario</b><small>Unos minutos. Solo tú ves tus respuestas.</small></span></button>`;
  if(S.match&&!S.match.seen[me])h+=`<div class="banner"><b>🔥 Coincidís: los dos tenéis ganas</b><div style="margin:6px 0 2px">Una idea para empezar: ${esc(S.match.idea)}</div><small>Ahora decidlo en voz alta 😉 · +20 puntos</small><div class="row"><button class="btn" style="background:#fff;color:#a0103d" data-a="matchOk">Vamos</button></div></div>`;
  if(S.salgo&&S.salgo.to===me&&S.salgo.at>n){const mins=Math.max(1,Math.round((S.salgo.at-n)/60000));h+=`<div class="banner blue"><b>🚗 ${esc(nm(S.salgo.from))} ya va de camino</b>Llega en unos ${mins} min (sobre las ${hhmm(S.salgo.at)})</div>`;}
@@ -439,8 +439,8 @@ function vHome(){const me=S.me,o=ot(me),n=now();let h=`<h1>Hola, ${esc(nm(me))}<
  const g=S.ganas[me]>n;
  h+=g?`<button class="big" data-a="ganasOff"><span class="e">😏</span><span><b>Tus ganas están puestas</b><small>Hasta las ${hhmm(S.ganas[me])}. Si ${esc(nm(o))} también, os aviso. Toca para quitarlas.</small></span></button>`
   :`<button class="big hot" data-a="sheet" data-v="ganas"><span class="e">😏</span><span><b>Tengo ganas</b><small>Solo se entera si también tiene ganas</small></span></button>`;
- h+=`<button class="big" data-a="tab" data-v="prop"><span class="e">✉️</span><span><b>Mandarle algo</b><small>Pedir o insinuar. +5 puntos por atreverte</small></span></button>`;
- h+=juegosGrid();
+ h+=`<button class="big hot" data-a="modo" data-v="ahora"><span class="e">⚡</span><span><b>Ahora</b><small>Algo ya: un reto, una pista o una foto</small></span></button>`;
+ h+=`<button class="big" data-a="modo" data-v="plan"><span class="e">🌙</span><span><b>Preparar algo</b><small>Montar una escena para esta noche o el finde</small></span></button>`;
  h+=`<div class="row"><button class="btn" style="font-size:14.5px;padding:10px 4px" data-a="salgo">🚗 Salgo ya</button><button class="btn" style="font-size:14.5px;padding:10px 4px" data-a="sheet" data-v="shop">🎟️ Vales</button></div>`;
  const inb=S.props.filter(p=>p.to===me&&p.st==='pend');
  h+=`<h2>Te ha llegado${inb.length?` (${inb.length})`:''}</h2>`+(inb.length?inb.map(p=>cardHTML(p,'in')).join(''):`<div class="empty">Nada pendiente. ¿Le mandas algo? 😏</div>`);
@@ -474,9 +474,10 @@ function makePlan(k,l){const s=S.me,t=ot(s);const mm=r=>m(r,s,t);const tp=CITAS.
  const txt=`${tp.e} Cita ${tp.n.toLowerCase()}\n📍 ${lugar}\n👗 ${vest}\n🧸 ${jug}\n🎯 ${regla}`+(extra?`\n🔥 Extra: ${extra}`:'');
  return{k,l,txt,tips:tp2};}
 
-function vProp(){const s=S.me,t=ot(s);let h=`<h1>Mandarle algo</h1><p class="sub">Elige qué te apetece. Si dice que no, no pasa nada.</p>`;
+function vProp(){const s=S.me,t=ot(s);let h=`<h1>Proponer</h1><p class="sub">Elige qué te apetece. Si dice que no, no pasa nada.</p>`;
  if(!both())h+=`<div class="hint">Aún sin filtrar. Cuando los dos terminéis el cuestionario, aquí solo saldrá lo que os gusta a los dos.</div>`;
- h+=`<div class="grid2">${CATS.map(c=>`<button class="tile ${ui.cat===c.k?'on':''}" data-a="cat" data-v="${c.k}"><span class="e">${c.e}</span><b>${c.n}</b><small>${c.s}</small></button>`).join('')}</div>`;
+ const grupos=[['ahora','⚡ Ahora','Aquí te pillo, aquí te mato'],['plan','🌙 Preparado','Montar una escena para luego'],['vuestro','✍️ Lo vuestro','Vuestra biblioteca y la sorpresa']];
+ grupos.forEach(G=>{const cs=CATS.filter(c=>c.g===G[0]);if(!cs.length)return;h+=`<h2>${G[1]}</h2><p class="sub">${G[2]}</p><div class="grid2">${cs.map(c=>`<button class="tile ${ui.cat===c.k?'on':''}" data-a="cat" data-v="${c.k}"><span class="e">${c.e}</span><b>${c.n}</b><small>${c.s}</small></button>`).join('')}</div>`;});
  if(ui.cat!=='mia')h+=`<h2>${ui.cat==='pista'?'¿Hasta dónde quieres llegar al final del día?':'¿Cómo de caliente?'}</h2>`+lvRow('lvl',ui.lvl);
  if(ui.cat==='pista'&&![1,2,3,4,5].some(l=>eligible('pista',l,s,t).length))h+=`<div class="empty">Las pistas no encajan con lo que habéis marcado en el cuestionario. Prueba con otra categoría o escribe la tuya.</div>`;
  else if(ui.cat==='pista'){if(!ui.pistas||ui.pistasKey!==ui.lvl+S.me){ui.pistas=genPistas();ui.pistasKey=ui.lvl+S.me;}
@@ -605,6 +606,7 @@ A.timerProp=id=>{const p=S.props.find(x=>x.id===id);if(p&&p.d)startTimer(p.d,p.t
 
 /* =================== MANEJADORES =================== */
 A.tab=v=>{ui.tab=v;render();if(v==='chat')setTimeout(()=>window.scrollTo(0,document.body.scrollHeight),0);else window.scrollTo(0,0);};
+A.modo=v=>{ui.tab='prop';ui.modo=v;ui.cat={ahora:'noche',plan:'cita',vuestro:'mia'}[v]||'noche';ui.sug=[];render();window.scrollTo(0,0);};
 A.lock=()=>{if(!dev.get('pin')){toast('Pon un PIN en ⚙️ Ajustes');return;}screen='pin';pinBuf='';ui.sheet=null;renderSheet();render();};
 A.settings=()=>openSheet('set');
 A.sheet=v=>openSheet(v);
@@ -653,11 +655,11 @@ A.pGo=()=>{let n=0;ui.pistas.forEach((p,i)=>{if(!p.txt.trim())return;const hm=(p
 
 A.r=v=>{const i=v.indexOf('|');const id=v.slice(0,i),how=v.slice(i+1);const p=S.props.find(x=>x.id===id);if(!p)return;const me=S.me;
  if(how==='contra'){openSheet('contra',id);return;}
- if(how==='si'){p.st='acc';heat(4);feed(p.from,`✅ ${nm(me)} ha dicho que sí`);toast('Aceptado. Ahora, a cumplirlo 😉');}
+ if(how==='si'){p.st='acc';feed(p.from,`✅ ${nm(me)} ha dicho que sí`);toast('Aceptado. Ahora, a cumplirlo 😉');}
  else if(how==='sube'){p.l=Math.min(5,p.l+1);p.up=true;p.st='acc';feed(p.from,`🔥 ${nm(me)} dice que sí… y lo sube un nivel`);toast('Sube un nivel 🔥');}
  else if(how==='guarda'){p.st='saved';feed(p.from,`⏳ ${nm(me)} lo guarda para luego 😉`);toast('Guardado para luego');}
  else if(how==='no'){p.st='no';feed(p.from,`🙂 ${nm(me)}: hoy no. Decir que no es gratis`);toast('Sin problema. No resta nada');}
- else if(how==='ok'){p.st='done';const g=10*p.l+(p.up?10:0);addPts(me,g);heat(8+p.l);confetti();feed(p.from,`🎉 ${nm(me)} lo ha cumplido`);toast(`+${g} puntos`);}
+ else if(how==='ok'){p.st='done';const g=10*p.l+(p.up?10:0);addPts(me,g);feed(p.from,`🎉 ${nm(me)} lo ha cumplido`);toast(`+${g} puntos`);}
  else if(how==='fail'){p.st='fail';const l=5*p.l;addPts(me,-l);const k=castigoPara(me);const kp={id:uid(),from:p.from,to:me,c:'castigo',l:k[1],txt:k[2],st:'acc',k:true,ts:now(),used:[],tips:[],d:k[3]?[k[3]]:null};S.props.unshift(kp);saveProp(kp);feed(p.from,`😈 ${nm(me)} no lo cumplió: le toca castigo`);toast(`−${l} puntos y castigo travieso`);}
  else if(how==='ahora'){p.st='acc';feed(p.from,`😉 ${nm(me)} rescata lo que guardó: ahora sí`);toast('¡Ahora sí!');}
  else if(how==='quita'){p.st='no';}
@@ -673,7 +675,7 @@ A.ganasSet=async k=>{const me=S.me,o=ot(me);const uT=until(k);
  const idea=ideas.length?resolve(rnd(ideas),me,o).txt:'Empezad por un beso largo. Lo demás, que siga solo.';
  S.ganas[me]=uT;closeSheet();toast('Comprobando…');
  let match=false;try{match=await setGanas(uT,idea);}catch(e){}
- if(match){notify();try{await loadAll();}catch(e){}logro('match');heat(30);confetti();toast('🔥 ¡Coincidís!');}
+ if(match){notify();try{await loadAll();}catch(e){}toast('🔥 ¡Coincidís!');}
  else toast(`Hecho. Si ${nm(o)} también antes de las ${hhmm(uT)}, os aviso a los dos`);
  render(true);};
 A.ganasOff=async()=>{S.ganas[S.me]=0;try{await sb.from('ganas').delete().eq('user_id',ME.uid);}catch(e){}render(true);toast('Quitadas. Nadie se ha enterado');};
@@ -693,7 +695,7 @@ A.delPin=()=>{dev.del('pin');toast('PIN quitado');renderSheet();};
 A.addItem=k=>{ui.form={k,t:TIPO[k][0][0],n:'',ph:null,o:'both'};openSheet('item');};
 A.fT=v=>{ui.form.t=v;renderSheet();};
 A.fO=v=>{ui.form.o=v;renderSheet();};
-A.fSave=()=>{const f=ui.form;const n=(f.n||'').trim()||tipoOf(f.k,f.t)[2];S.items.push({id:uid(),k:f.k,t:f.t,n,ph:f.ph,o:f.o});logro('cajon');ui.sug=[];save();toast('Guardado en el cajón');closeSheet();};
+A.fSave=()=>{const f=ui.form;const n=(f.n||'').trim()||tipoOf(f.k,f.t)[2];S.items.push({id:uid(),k:f.k,t:f.t,n,ph:f.ph,o:f.o});ui.sug=[];save();toast('Guardado en el cajón');closeSheet();};
 A.itemOpen=id=>openSheet('itemV',id);
 A.itemDel=id=>{S.items=S.items.filter(x=>x.id!==id);ui.sug=[];save();toast('Quitado del cajón');closeSheet();};
 
@@ -736,28 +738,12 @@ document.addEventListener('change',e=>{const el=e.target;if(!el||!el.dataset||!e
 setInterval(()=>{const a=document.activeElement;if(screen!=='app'||ui.sheet||ui.deck||ui.quiz!=null)return;if(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'))return;if(ui.tab==='home'||ui.tab==='chat')render(true);},20000);
 
 /* =================================================================
-   Llama · módulo de juegos y chispa
-   Dados, ruleta, verdad o reto, ruta de la noche, reto relámpago,
-   temperatura de pareja, rangos, logros y animaciones.
-   Usa helpers ya definidos: rnd, shuf, eligible, resolve, both, S,
-   nm, ot, render, openSheet, closeSheet, renderSheet, toast, LV,
-   CATS, now, startTimer, send, notify, feed, uid, esc.
+   Llama · extras
+   Solo cartas extra para la biblioteca. La capa de juegos (dados,
+   ruleta, verdad o reto, ruta, temperatura, rangos, logros) se
+   retiró a propósito: la esencia es proponer, no jugar a la máquina.
    ================================================================= */
 
-/* ---------- contenido nuevo ---------- */
-const DVERBO=[['💋','Besa'],['👅','Lame'],['🫦','Mordisquea'],['💨','Sopla sobre'],['✋','Acaricia'],['💆','Masajea'],['🧊','Pasa un hielo por'],['🪶','Roza apenas'],['🔥','Recorre con la lengua'],['🤲','Agarra fuerte'],['😮‍💨','Susurra algo sucio en'],['💋','Deja una marca en']];
-const DZONA=[['el cuello'],['la oreja'],['los labios'],['la nuca'],['la clavícula'],['la espalda baja'],['el interior del muslo'],['el vientre'],['las caderas'],['el pecho'],['justo donde más le gusta'],['donde no se atreve a pedir']];
-const DEXTRA=[['⏱️','durante 1 minuto sin parar'],['⏱️','durante 3 minutos'],['🐢','muy despacio, hasta que suplique'],['🔁','y repite hasta que tiemble'],['🙈','con los ojos vendados'],['🔄','y luego te toca a ti'],['🗣️','mientras le cuentas lo que viene después'],['🚫','sin dejar que te toque']];
-
-/* Verdades: invitan a abrir la boca, el picante lo ponéis vosotros */
-const VERDADES=[null,
- ['¿Qué pensaste la primera vez que me viste sin ropa?','¿Cuál es el recuerdo nuestro que te pone cuando lo revives?','¿Qué gesto mío te enciende sin que yo me entere?','¿Dónde te habría gustado que te besara hoy mientras trabajabas?','¿Qué canción te recuerda a una noche conmigo?'],
- ['¿Dónde te mueres por que te bese ahora mismo?','¿Qué llevabas puesto el día que más me deseaste?','¿Prefieres mandar tú o que te manden? Sé sincero.','¿Qué me pondría a mil si me lo encontrara puesto?','¿Qué me has querido pedir alguna vez y te ha dado corte?'],
- ['¿Cuál es tu parte favorita de mi cuerpo y qué le harías ahora?','¿Qué te gustaría que te hiciera mucho más a menudo?','¿Has pensado en mí en un sitio nada apropiado? Cuéntalo con detalle.','¿Qué palabra al oído te derrite del todo?','¿Qué es lo más atrevido que hemos hecho y repetirías ya?'],
- ['¿Qué fantasía tuya no me has contado todavía?','¿Qué te mueres por probar y nunca te has atrevido a decir en voz alta?','Descríbeme tu noche perfecta conmigo, sin saltarte nada.','¿En qué sitio raro te gustaría que lo hiciéramos?','¿Qué te daría vergüenza que supiera que te pone?'],
- ['Dime al oído, sin filtro, lo que quieres que pase esta noche.','¿Hasta dónde me dejarías llegar si esta noche mandara yo?','Cuéntame tu fantasía más salvaje conmigo, sin censura.','¿Qué límite te apetece empujar un poco más conmigo?','Si no hubiera ninguna regla esta noche, ¿qué me harías primero?']];
-
-/* Cartas suaves extra para dar variedad (se suman a la biblioteca) */
 const EXTRA_RAW=[
 ['rem',1,'{B}, mándale a {A} un emoji y solo uno que resuma lo que le harías ahora mismo.',''],
 ['rem',2,'{B}, dile a {A} en una frase lo primero que le vas a arrancar al llegar.','mensajes'],
@@ -769,132 +755,7 @@ const EXTRA_RAW=[
 ['fuera',2,'De camino, {A} le manda a {B} una sola instrucción para nada más cruzar la puerta de casa.','provocar'],
 ['rol',2,'Diez minutos tratándoos de usted, como dos desconocidos con muchas ganas. El que rompa el personaje, paga prenda.','desconocidos','','600'],
 ['pista',2,'Cada mensaje que me mandes hoy, acábalo con un punto. Yo sé lo que significa.','insinuar>']];
-
-/* Rangos compartidos (por puntos sumados de los dos) */
-const RANGOS=[[0,'Chispa','✨'],[120,'Brasa','🔥'],[350,'Hoguera','🔥🔥'],[700,'Incendio','🌋'],[1200,'Leyenda','👑']];
-function rangoDe(p){let r=RANGOS[0];for(const x of RANGOS)if(p>=x[0])r=x;return r;}
-function rangoNext(p){for(const x of RANGOS)if(p<x[0])return x;return null;}
-
-/* Logros */
-const LOGROS=[['match','🔥','Primera coincidencia','Los dos tuvisteis ganas a la vez'],
- ['dados','🎲','Manos de la suerte','Tiraste los dados diez veces'],
- ['ruleta','🎡','La ruleta manda','Giraste la ruleta diez veces'],
- ['ruta','🌙','Noche completa','Terminaste una ruta de la noche'],
- ['verdad','🎭','Sin secretos','Jugasteis a verdad o reto'],
- ['brasa','🔥','En llamas','Llegasteis al rango Brasa'],
- ['cajon','🧰','Bien surtidos','Metisteis algo en el cajón']];
-function logro(id){if(!S.logros)S.logros=[];if(S.logros.indexOf(id)>=0)return;S.logros.push(id);const l=LOGROS.find(x=>x[0]===id);if(l){toast('🏅 Logro: '+l[2]);hap([30,60,30]);}save();}
-
-/* ---------- temperatura de pareja ---------- */
-function tempNow(){const t=S.temp||0,at=S.tempAt||0;if(!at)return t;const horas=(now()-at)/3600000;return Math.max(0,Math.round(t-horas*8));} // enfría ~8 por hora
-function heat(d){const cur=tempNow();S.temp=Math.max(0,Math.min(100,cur+d));S.tempAt=now();const r=rangoDe(S.pts.a+S.pts.b);if(r[1]==='Brasa'||RANGOS.indexOf(r)>=1)logro('brasa');save();}
-function tempEmoji(t){return t>=80?'🌋':t>=55?'🔥🔥':t>=30?'🔥':t>=10?'✨':'🫧';}
-
-/* ---------- vibración y confeti ---------- */
-function hap(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
-function confetti(){try{const C=['#ff4d6d','#ffc145','#ff6b6b','#3ddc97','#ff9a3d','#d81b60'];for(let i=0;i<26;i++){const d=document.createElement('div');d.className='cfti';d.style.left=(Math.random()*100)+'vw';d.style.background=C[i%C.length];d.style.animationDelay=(Math.random()*0.25)+'s';d.style.transform='rotate('+(Math.random()*360)+'deg)';document.body.appendChild(d);setTimeout(()=>d.remove(),1400);}}catch(e){}}
-
-/* ================= DADOS ================= */
-SH.dados=()=>{const d=ui.dado||{};
- return `<h2>🎲 Dados picantes</h2><p class="sub">Acción, zona y un extra. Tiradas infinitas.</p>
- <div class="dados">
-  <div class="dado" id="d0">${d.v?DVERBO[d.v[0]][0]:'🎲'}</div>
-  <div class="dado" id="d1">${d.v?'📍':'🎲'}</div>
-  <div class="dado" id="d2">${d.v?DEXTRA[d.v[2]][0]:'🎲'}</div>
- </div>
- <div class="dadotxt" id="dtxt">${d.v?esc(dadoFrase(d.v)):'<span class="sub">Toca para tirar</span>'}</div>
- <div class="row"><button class="btn p" data-a="dadoRoll">🎲 ${d.v?'Otra tirada':'Tirar'}</button></div>
- ${d.v?'<div class="row"><button class="btn g" data-a="dadoHecho">✅ Hecho · sube la temperatura</button></div>':''}`;};
-function dadoFrase(v){return `${DVERBO[v[0]][1]} ${DZONA[v[1]][0].toLowerCase()} ${DEXTRA[v[2]][1]}.`;}
-A.dados=()=>{ui.dado={};openSheet('dados');};
-A.dadoRoll=()=>{audioOn();hap(40);
- const el0=document.getElementById('d0'),el1=document.getElementById('d1'),el2=document.getElementById('d2');
- [el0,el1,el2].forEach(e=>{if(e){e.classList.remove('roll');void e.offsetWidth;e.classList.add('roll');}});
- ui.dado={v:[Math.floor(Math.random()*DVERBO.length),Math.floor(Math.random()*DZONA.length),Math.floor(Math.random()*DEXTRA.length)]};
- setTimeout(()=>{if(ui.sheet&&ui.sheet.k==='dados'){renderSheet();}},480);
- ui._dc=(ui._dc||0)+1;if(ui._dc>=10)logro('dados');};
-A.dadoHecho=()=>{heat(10);beep(2);confetti();toast('🔥 +10 de temperatura');renderSheet();};
-
-/* ================= RULETA ================= */
-const RSEG=[['noche','🌙','Esta noche'],['atad','🪢','Ataduras'],['rol','🎭','Rol'],['obj','👙','Cajón'],['fuera','🌿','Fuera'],['rem','📱','A distancia'],['dados','🎲','Dados'],['verdad','🎭','Verdad']];
-function ruletaColors(){return RSEG.map((s,i)=>i%2?'#2e1c2b':'#3d1527');}
-SH.ruleta=()=>{const lv=ui.ruletaLvl||3;const n=RSEG.length;const seg=360/n;
- const grad=RSEG.map((s,i)=>`${ruletaColors()[i]} ${i*seg}deg ${(i+1)*seg}deg`).join(',');
- let res=ui.ruletaRes?`<div class="card" style="margin-top:14px"><div class="txt">${esc(ui.ruletaRes.txt)}</div>${ui.ruletaRes.d?`<div class="row"><button class="btn p" data-a="ruletaGo">⏱️ Empezar · ${durLabel(ui.ruletaRes.d)}</button></div>`:''}<div class="row"><button class="btn g" data-a="ruletaHecho">✅ Hecho</button></div></div>`:'';
- return `<h2>🎡 Ruleta</h2><p class="sub">Gira y que decida la suerte.</p>
- <div class="wheelwrap"><div class="wpin">▼</div><div class="wheel" id="wheel" style="background:conic-gradient(${grad})">${RSEG.map((s,i)=>`<span class="wlbl" style="transform:translate(-50%,-50%) rotate(${i*seg+seg/2}deg) translateY(-66px)">${s[1]}</span>`).join('')}</div></div>
- <div class="lv">${[1,2,3,4,5].map(l=>`<button class="${lv===l?'on':''}" data-a="ruletaLvl" data-v="${l}"><span class="e">${LV[l].e}</span>${LV[l].n}</button>`).join('')}</div>
- <div class="row"><button class="btn p" data-a="ruletaSpin" id="spinbtn">🎡 Girar</button></div>${res}`;};
-A.ruleta=()=>{ui.ruletaLvl=ui.ruletaLvl||3;ui.ruletaRes=null;ui.ruletaRot=0;openSheet('ruleta');};
-A.ruletaLvl=v=>{ui.ruletaLvl=+v;ui.ruletaRes=null;renderSheet();};
-A.ruletaSpin=()=>{const w=document.getElementById('wheel');const btn=document.getElementById('spinbtn');if(!w)return;audioOn();hap(50);
- const n=RSEG.length,seg=360/n;const idx=Math.floor(Math.random()*n);
- const base=(ui.ruletaRot||0);const vueltas=5*360;const target=base+vueltas+ (360-(idx*seg+seg/2));
- ui.ruletaRot=target;w.style.transition='transform 3.1s cubic-bezier(.17,.67,.2,1)';w.style.transform='rotate('+target+'deg)';
- if(btn){btn.disabled=true;}
- setTimeout(()=>{resolveRuleta(RSEG[idx][0]);beep(2);confetti();hap([30,40,80]);},3200);
- ui._rc=(ui._rc||0)+1;if(ui._rc>=10)logro('ruleta');};
-function resolveRuleta(cat){const s=S.me,t=ot(s);const l=ui.ruletaLvl||3;
- if(cat==='dados'){const v=[Math.floor(Math.random()*DVERBO.length),Math.floor(Math.random()*DZONA.length),Math.floor(Math.random()*DEXTRA.length)];ui.ruletaRes={txt:'🎲 '+dadoFrase(v),d:null};renderSheet();return;}
- if(cat==='verdad'){ui.ruletaRes={txt:'🎭 '+rnd(VERDADES[l]),d:null};renderSheet();return;}
- let cs=eligible(cat,l,s,t);if(!cs.length){for(let x=l;x>=1&&!cs.length;x--)cs=eligible(cat,x,s,t);}
- if(!cs.length){ui.ruletaRes={txt:'Nada en esta casilla con lo que habéis marcado. Gira otra vez o cambia de nivel.',d:null};}
- else{const r=resolve(rnd(cs),s,t);ui.ruletaRes={txt:r.txt,d:r.d,tips:r.tips};}
- renderSheet();}
-A.ruletaGo=()=>{if(ui.ruletaRes&&ui.ruletaRes.d)startTimer(ui.ruletaRes.d,ui.ruletaRes.txt,{t:'free'});};
-A.ruletaHecho=()=>{heat(12);confetti();toast('🔥 +12 de temperatura');ui.ruletaRes=null;renderSheet();};
-
-/* ================= VERDAD O RETO ================= */
-SH.vr=()=>{const g=ui.vr||{};const turno=g.turn||S.me;
- let body;
- if(g.card){body=`<div class="card"><div class="who">${g.card.kind==='v'?'🎭 Verdad para':'🔥 Reto para'} ${esc(nm(turno))}</div><div class="txt">${esc(g.card.txt)}</div>${g.card.d?`<div class="row"><button class="btn p" data-a="vrGo">⏱️ ${durLabel(g.card.d)}</button></div>`:''}</div><div class="row"><button class="btn g" data-a="vrDone">✅ Cumplido · cambia el turno</button></div><div class="row"><button class="btn" data-a="vrSkip">↻ Otra</button></div>`;}
- else{body=`<p class="sub">Turno de <b>${esc(nm(turno))}</b>. Elige:</p><div class="row"><button class="btn" data-a="vrPick" data-v="v">🎭 Verdad</button><button class="btn p" data-a="vrPick" data-v="r">🔥 Reto</button></div>`;}
- const lv=g.l||3;
- return `<h2>🎭 Verdad o reto</h2>
- <div class="lv">${[1,2,3,4,5].map(l=>`<button class="${lv===l?'on':''}" data-a="vrLvl" data-v="${l}"><span class="e">${LV[l].e}</span>${LV[l].n}</button>`).join('')}</div>
- ${body}`;};
-A.vr=()=>{ui.vr={turn:S.me,l:3,card:null};logro('verdad');openSheet('vr');};
-A.vrLvl=v=>{ui.vr.l=+v;renderSheet();};
-A.vrPick=v=>{const g=ui.vr,s=g.turn,t=ot(s),l=g.l;hap(30);
- if(v==='v'){g.card={kind:'v',txt:rnd(VERDADES[l]),d:null};}
- else{let cs=eligible('azar',l,s,t).filter(c=>c.c!=='pista');if(!cs.length)for(let x=l;x>=1&&!cs.length;x--)cs=eligible('azar',x,s,t).filter(c=>c.c!=='pista');
-  if(cs.length){const r=resolve(rnd(cs),s,t);g.card={kind:'r',txt:r.txt,d:r.d};}else g.card={kind:'r',txt:'Nada marcado a este nivel. Baja el nivel o tira una Verdad.',d:null};}
- renderSheet();};
-A.vrSkip=()=>{const g=ui.vr;A.vrPick(g.card.kind);};
-A.vrGo=()=>{const g=ui.vr;if(g.card&&g.card.d)startTimer(g.card.d,g.card.txt,{t:'free'});};
-A.vrDone=()=>{const g=ui.vr;heat(6);g.turn=ot(g.turn);g.card=null;renderSheet();};
-
-/* ================= RUTA DE LA NOCHE ================= */
-function buildRuta(){const s=S.me,t=ot(s);const niveles=[1,2,3,4,5];const pasos=[];
- niveles.forEach(l=>{let cs=eligible('azar',l,s,t).filter(c=>c.c!=='pista');if(cs.length)pasos.push(resolve(rnd(cs),s,t));else{const v=[Math.floor(Math.random()*DVERBO.length),Math.floor(Math.random()*DZONA.length),Math.floor(Math.random()*DEXTRA.length)];pasos.push({txt:'🎲 '+dadoFrase(v),d:null});}});
- return pasos;}
-SH.ruta=()=>{const g=ui.ruta;
- if(!g||!g.pasos){return `<h2>🌙 Ruta de la noche</h2><p class="sub">Un recorrido que empieza suave y sube de tono, paso a paso. Solo cosas que os gustan a los dos.</p><div class="row"><button class="btn p" data-a="rutaStart">Empezar la ruta</button></div>`;}
- const i=g.i,p=g.pasos[i],pct=Math.round((i)/g.pasos.length*100);
- return `<h2>🌙 Ruta de la noche</h2><div class="heatbar"><i style="width:${pct}%"></i></div><p class="sub">Paso ${i+1} de ${g.pasos.length} · ${LV[i+1]?LV[i+1].e:''}</p>
- <div class="card"><div class="txt">${esc(p.txt)}</div>${p.d?`<div class="row"><button class="btn p" data-a="rutaTimer">⏱️ ${durLabel(p.d)}</button></div>`:''}</div>
- <div class="row"><button class="btn g" data-a="rutaNext">${i>=g.pasos.length-1?'🔥 Terminar la ruta':'✅ Hecho · siguiente'}</button><button class="btn mini" data-a="rutaSwap">↻</button></div>`;};
-A.ruta=()=>{ui.ruta={};openSheet('ruta');};
-A.rutaStart=()=>{ui.ruta={pasos:buildRuta(),i:0};heat(5);renderSheet();};
-A.rutaTimer=()=>{const g=ui.ruta,p=g.pasos[g.i];if(p&&p.d)startTimer(p.d,p.txt,{t:'free'});};
-A.rutaSwap=()=>{const g=ui.ruta,s=S.me,t=ot(s),l=g.i+1;let cs=eligible('azar',l,s,t).filter(c=>c.c!=='pista');if(cs.length)g.pasos[g.i]=resolve(rnd(cs),s,t);renderSheet();};
-A.rutaNext=()=>{const g=ui.ruta;heat(8);if(g.i>=g.pasos.length-1){logro('ruta');confetti();beep(3);hap([40,60,120]);toast('🌋 Ruta completa. ¡Qué noche!');closeSheet();render(true);return;}g.i++;renderSheet();};
-
-/* ================= RETO RELÁMPAGO ================= */
-A.relampago=()=>{const s=S.me,t=ot(s);let cs=[];[4,3,5,2].forEach(l=>{if(!cs.length)cs=eligible('azar',l,s,t).filter(c=>c.c!=='pista');});
- if(!cs.length){toast('Aún no hay retos que encajen. Terminad el cuestionario');return;}
- const r=resolve(rnd(cs),s,t);send({c:'noche',l:3,txt:'⚡ Reto relámpago: '+r.txt,used:r.used,tips:r.tips,d:r.d});heat(8);confetti();hap([20,40,20]);};
-
-/* ---------- init: sumar cartas extra y arrancar logros ---------- */
 EXTRA_RAW.forEach((x,i)=>CARDS.push({id:'cx'+i,c:x[0],l:x[1],t:x[2],r:x[3]?x[3].split(' '):[],g:x[4]==='g',d:x[5]?String(x[5]).split('+').map(Number):null}));
-
-/* ---------- piezas de inicio ---------- */
-function tempHero(){const t=tempNow();const p=(S.pts.a||0)+(S.pts.b||0);const r=rangoDe(p);const nx=rangoNext(p);
- return `<div class="hero"><div class="herotop"><span class="rango">${r[2]} ${esc(r[1])}</span><span class="sub">${nx?`${nx[0]-p} pts para ${esc(nx[1])} ${nx[2]}`:'Rango máximo 👑'}</span></div>`+
- `<div class="heat"><span class="flame">${tempEmoji(t)}</span><div class="heatbar"><i style="width:${t}%"></i></div><b>${t}°</b></div>`+
- `<small class="sub" style="font-size:12.5px">Vuestra temperatura sube al jugar y baja sola con el tiempo.</small></div>`;}
-function juegosGrid(){const G=[['dados','🎲','Dados','Acción + zona'],['ruleta','🎡','Ruleta','La suerte decide'],['vr','🎭','Verdad o reto','Preguntas y retos'],['ruta','🌙','Ruta de la noche','Sube de tono'],['partida','🃏','Partida','Por turnos'],['relampago','⚡','Reto relámpago','Mándale uno ya']];
- return `<h2>🎮 Jugar</h2><div class="grid2">`+G.map(x=>`<button class="tile game" data-a="${x[0]}"><span class="e">${x[1]}</span><b>${esc(x[2])}</b><small>${esc(x[3])}</small></button>`).join('')+`</div>`;}
 /* =================================================================
    Pantallas de arranque, importador de archivo, avisos y boot.
    ================================================================= */
@@ -1044,7 +905,7 @@ function applyImport(text){
 A.impExample=()=>{window.scrollTo(0,0);toast('Elige el archivo .txt con el botón de arriba');};
 
 /* ---------------- puente de depuración ---------------- */
-try{globalThis.__llama={get S(){return S;},set S(v){S=v;},ME,setCK(k){CK=k;},get CK(){return CK;},get screen(){return screen;},set screen(v){screen=v;},get ui(){return ui;},enc,dec,deriveKey,parseFile,applyImport,resolve,eligible,pickSug,impOK,matches,makePlan,genPistas,both,fresh,render,VIEWS,header,nav,CARDS,SECS,CATS,LV,SH,dadoFrase,buildRuta,tempNow,rangoDe,rangoNext,tempHero,juegosGrid,VERDADES,DVERBO,RSEG};}catch(e){}
+try{globalThis.__llama={get S(){return S;},set S(v){S=v;},ME,setCK(k){CK=k;},get CK(){return CK;},get screen(){return screen;},set screen(v){screen=v;},get ui(){return ui;},enc,dec,deriveKey,parseFile,applyImport,resolve,eligible,pickSug,impOK,matches,makePlan,genPistas,both,fresh,render,VIEWS,header,nav,CARDS,SECS,CATS,LV,SH};}catch(e){}
 
 /* ---------------- a jugar ---------------- */
 boot();
